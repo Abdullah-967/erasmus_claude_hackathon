@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import type { WikiPage } from "@/types/database";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import AgentPanel from "./AgentPanel";
 import RightPanel from "./RightPanel";
@@ -12,6 +13,10 @@ type RightPanelMode = "pages" | "related" | "referenced";
 type SectionKey = "title" | "summary" | "body" | "key_points";
 
 export default function AppShell() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pageParam = searchParams.get("page");
+
   const [activePage, setActivePage] = useState<WikiPage | null>(null);
   const [rightPanelMode, setRightPanelMode] = useState<RightPanelMode>("pages");
   const [relatedPages, setRelatedPages] = useState<WikiPage[]>([]);
@@ -41,6 +46,19 @@ export default function AppShell() {
   // Fetch user and all pages on mount
   useEffect(() => {
     async function init() {
+      // QA bypass: use the server-side QA endpoint instead of client auth
+      if (process.env.NEXT_PUBLIC_QA_BYPASS === "1") {
+        const res = await fetch("/api/qa-pages");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setAllPages(data);
+            setActivePage(data[0]);
+          }
+        }
+        return;
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -54,8 +72,15 @@ export default function AppShell() {
         .order("updated_at", { ascending: false });
 
       if (data) {
-        setAllPages(data);
-        if (data.length > 0) setActivePage(data[0]);
+        const pages = data as WikiPage[];
+        setAllPages(pages);
+        if (pages.length > 0) {
+          // If returning from /graph with ?page=<id>, restore that page
+          const target = pageParam
+            ? (pages.find((p) => p.id === pageParam) ?? pages[0])
+            : pages[0];
+          setActivePage(target);
+        }
       }
     }
     init();
@@ -284,7 +309,28 @@ export default function AppShell() {
         : allPages;
 
   return (
-    <div className="grid grid-cols-[320px_1fr_280px] grid-rows-[1fr] h-screen overflow-hidden">
+    <div className="grid grid-cols-[320px_1fr_280px] grid-rows-[40px_1fr] h-screen overflow-hidden">
+      {/* Header bar — spans all 3 columns */}
+      <header className="col-span-3 flex items-center justify-between px-4 border-b border-gray-800 bg-gray-950">
+        <span className="text-sm font-semibold text-gray-300">Personal Wiki</span>
+        <button
+          type="button"
+          onClick={() => router.push("/graph")}
+          title="Knowledge Graph"
+          className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="6" cy="6" r="2" />
+            <circle cx="18" cy="6" r="2" />
+            <circle cx="12" cy="18" r="2" />
+            <line x1="8" y1="6" x2="16" y2="6" />
+            <line x1="7" y1="7.5" x2="11" y2="16.5" />
+            <line x1="17" y1="7.5" x2="13" y2="16.5" />
+          </svg>
+          Graph
+        </button>
+      </header>
+
       <AgentPanel
         onNavigateToTitle={handleNavigate}
         onRightPanelChange={handleRightPanel}

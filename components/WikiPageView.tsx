@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import type { RelationshipType, Source, WikiPage } from "@/types/database";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -217,6 +218,7 @@ export default function WikiPageView({
   revealedSections,
   changedSections,
 }: Props) {
+  const router = useRouter();
   const [data, setData] = useState<RelatedData | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -390,9 +392,18 @@ export default function WikiPageView({
               {isRevealing && !revealedSections?.has("title") ? (
                 <div className="animate-pulse h-7 w-48 rounded bg-gray-800" />
               ) : (
-                <h1 className="text-2xl font-bold text-gray-100">
-                  {page.title}
-                </h1>
+                <div className="flex items-start justify-between gap-3">
+                  <h1 className="text-2xl font-bold text-gray-100">
+                    {page.title}
+                  </h1>
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/graph?focus=${page.id}`)}
+                    className="shrink-0 text-xs text-gray-500 hover:text-blue-400 transition-colors mt-1.5 whitespace-nowrap"
+                  >
+                    View in graph →
+                  </button>
+                </div>
               )}
             </div>
 

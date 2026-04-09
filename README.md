@@ -2,7 +2,11 @@
 
 > Talk to your learning, and your personal wiki builds itself.
 
-An AI-powered app that turns fragmented learning into a living, linked personal wiki. Built for the Erasmus Claude Hackathon.
+Built for the **[Erasmus Claude Hackathon](https://hackathon.erasmus.ai)** — a competition challenging teams to build meaningful AI applications using the Claude API.
+
+The core problem we tackled: people learn constantly — across chats, papers, random notes, and half-formed thoughts — but that knowledge stays fragmented and siloed. Existing tools help you *store* notes. They don't actively structure, connect, or reason over what you know.
+
+Personal Wikipedia Companion is our answer to that. It's an AI companion that listens to what you learn, structures it into wiki pages, links related ideas, and answers questions grounded in your own knowledge — not generic web knowledge. The more you use it, the smarter it gets about *your* understanding specifically.
 
 ## What it does
 

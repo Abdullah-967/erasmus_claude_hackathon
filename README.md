@@ -2,7 +2,9 @@
 
 > Talk to your learning, and your personal wiki builds itself.
 
-Built for the **[Erasmus Claude Hackathon](https://hackathon.erasmus.ai)** — a competition challenging teams to build meaningful AI applications using the Claude API.
+Built for the **[Erasmus Claude Hackathon](https://erasmusai.nl/)** — a competition challenging teams to build meaningful AI applications using the Claude API.
+
+Link to deployed version: **[Personal_Wiki_](https://erasmus-claude-hackathon.vercel.app/)**
 
 The core problem we tackled: people learn constantly — across chats, papers, random notes, and half-formed thoughts — but that knowledge stays fragmented and siloed. Existing tools help you *store* notes. They don't actively structure, connect, or reason over what you know.
 
